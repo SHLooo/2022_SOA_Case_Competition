@@ -1,0 +1,48 @@
+---
+title: "Extract Players"
+author: "Shuhao Liu"
+date: "24/03/2022"
+output: html_document
+---
+
+```{r}
+load("/Users/liushuhao/Desktop/SOA Case Competitoin/R_Project/players_joined_subset.rda")
+load("/Users/liushuhao/Desktop/SOA Case Competitoin/R_Project/League_final_norm.rda")
+
+```
+
+extract 2020 & 2021 champion team from the league table
+
+```{r}
+WinningPlayers2020 <- TournShoot$Player[which(TournShoot$`nation rank` == 1 & TournShoot$`Year` == 2020)]
+WinningPlayers2021 <- TournShoot$Player[which(TournShoot$`nation rank` == 1 & TournShoot$`Year` == 2021)]
+
+PlayerIndex2020 <- sapply(WinningPlayers2020, function(x) {which(League.JoinedTable.norm$Player == x)})
+PlayerIndex2021 <- sapply(WinningPlayers2021, function(x) {unlist(which(League.JoinedTable.norm$Player == x))})
+
+Winner2020 = League.JoinedTable.norm[unlist(PlayerIndex2020), ]
+Winner2021 = League.JoinedTable.norm[unlist(PlayerIndex2021), ]
+```
+
+```{r eval = F}
+write.xlsx(Winner2020, file="champion_team_data.xlsx", sheetName = "Winner2020", append = FALSE)
+write.xlsx(Winner2021, file="champion_team_data.xlsx", sheetName = "Winner2021", append = T)
+```
+
+```{r}
+players <- c("C. Langa", "K. Balogun", "X. Pavlovi?", "C. Medina", "G. Jumbe", "G. Nugroho", "H. Francisco","L. Kyambadde","X. Leroy","Z. Griffiths","M. Naluwooza","H. Adjei","O. Wanjala","D. Bergmann","Q. Barbier","D. Abiria","T. Zoabi")
+goalkeepers <- c("Y. Larsen","Y. Ruggiero")
+playerIndex <- sapply(players, function(x) {which(League.JoinedTable.norm$Player == x)})
+playerData = League.JoinedTable.norm[unlist(playerIndex), ]
+```
+
+```{r}
+Gper90Index <- which(colnames(League.JoinedTable.norm) == "Gper90")
+TotalCmpIndex <- which(colnames(League.JoinedTable.norm) == "Total Cmp%")
+TklWIndex <- which(colnames(League.JoinedTable.norm) == "TklW%")
+```
+
+```{r}
+library(MASS)
+parcoord(playerData[,c(Gper90Index, TotalCmpIndex, TklWIndex)])
+```

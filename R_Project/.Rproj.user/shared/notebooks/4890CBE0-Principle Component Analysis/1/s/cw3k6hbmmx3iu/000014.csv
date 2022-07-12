@@ -1,0 +1,2 @@
+"0","par(mfrow = c(1,2), cex = 0.8)"
+"0","hist(A+0.001, breaks = 25, probability = T, xlab = ""probability of ranked top 10"", main = ""Histogram of the Probability of Ranked Top 10"", sub = ""Figure 2.3 Histogram of the Probability of Reaching Top 10"")"

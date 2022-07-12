@@ -1,0 +1,68 @@
+---
+title: "factor analysis"
+author: "Shuhao Liu"
+date: "13/03/2022"
+output: html_document
+---
+
+```{r}
+path <- "/Users/liushuhao/Desktop/SOA Case Competitoin/R_Project/players_joined_subset.rda"
+load(path)
+```
+
+# factor analysis
+```{r}
+LeagePlayerIndex <- which(colnames(League.JoinedTable) == "Player")
+League.attr <- League.JoinedTable[, -c(LeagePlayerIndex)]
+
+TournPlayerIndex <- which(colnames(Tourn.JoinedTable.ranked) == "Player")
+TournRankIndex <- which(colnames(Tourn.JoinedTable.ranked) == "nation rank")
+TournYearIndex <- which(colnames(Tourn.JoinedTable.ranked) == "Year")
+Tourn.attr <- Tourn.JoinedTable.ranked[,-c(TournPlayerIndex,TournRankIndex,TournRankIndex)]
+
+factor <- 9
+fa.L <- factanal(League.attr, factors = factor)
+fa.T <- factanal(Tourn.attr, factors = factor)
+
+League.attr.fa <- as.matrix(League.attr) %*% fa.L$loadings
+Tourn.attr.fa <- as.matrix(Tourn.attr) %*% fa.T$loadings
+
+normalize <-function(data) {
+  norm <- function(x) {(x-min(x))/(max(x)-min(x))}
+  as.data.frame(lapply(data, norm))
+}
+
+norm <-function(x) { (x-min(x))/(max(x)-min(x)) }
+League.attr.fa.norm <- as.data.frame(lapply(League.attr.fa, norm))
+```
+
+# test accuracy
+```{r}
+#set.seed(969)
+A<-0
+for(i in rep(1,100)){
+rand <- sample(1:nrow(Tourn.attr.fa), 0.8 * nrow(Tourn.attr.fa))
+
+Tourn_train.fa <- Tourn.attr.fa[rand,] 
+Tourn_test.fa <- Tourn.attr.fa[-rand,] 
+rank.train <- Tourn.JoinedTable.ranked[rand, "nation rank"]
+rank.test <- Tourn.JoinedTable.ranked[-rand, "nation rank"]
+
+#run knn function
+k = 13
+error <- 9
+
+pred.fa <- knn(Tourn_train.fa, Tourn_test.fa, cl=unlist(rank.train), k=k, use.all = TRUE)
+accuracy <- sum(abs(as.numeric((pred.fa)) - as.numeric(unlist(rank.test))) <= error) / length(pred.fa)
+A <- A+accuracy
+}
+#accuracy
+A/100
+```
+
+# produce result
+```{r}
+rank <- Tourn.JoinedTable.ranked$"nation rank"
+rankPred <- knn(Tourn.attr.fa, League.attr.fa, cl=rank, k=13)
+table(rankPred)
+```

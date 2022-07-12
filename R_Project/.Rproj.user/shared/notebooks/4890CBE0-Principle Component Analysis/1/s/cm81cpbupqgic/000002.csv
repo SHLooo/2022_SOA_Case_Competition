@@ -1,0 +1,4 @@
+"0","# apply Principle Component Analysis"
+"0","compNum <- 22"
+"0","pca = prcomp(Tourn_norm, scale = T)"
+"0","Tourn_norm.pca <- as.matrix(Tourn_norm) %*% as.matrix(pca$rotation[,1:compNum])"

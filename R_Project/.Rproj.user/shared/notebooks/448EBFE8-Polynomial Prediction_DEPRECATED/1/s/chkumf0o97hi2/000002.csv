@@ -1,0 +1,3 @@
+"0","#standardize attributes"
+"0","League.JoinedTable.Tailored.standardized <- as.data.frame(cbind(League.JoinedTable.Tailored[,1], scale(League.JoinedTable.Tailored[,2:ncol(League.JoinedTable.Tailored)])))"
+"0","Tourn.JoinedTable.Tailored.standardized <- as.data.frame(cbind(Tourn.JoinedTable.Tailored[,1], scale(Tourn.JoinedTable.Tailored[,2:ncol(Tourn.JoinedTable.Tailored)])))"

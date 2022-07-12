@@ -1,0 +1,8 @@
+"0","#plot(TournDefense.score, ylim = c(-30, 42))"
+"0","threshold <- 30"
+"0","accuracy <- sum(abs(LeagueDefense.rank - TournDefense.rank) <= threshold)/length(LeagueDefense.rank)"
+"0","accuracy"
+"1","[1]"
+"1"," 0.3024055"
+"1","
+"

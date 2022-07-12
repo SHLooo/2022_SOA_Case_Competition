@@ -1,0 +1,28 @@
+"0","library(dplyr)"
+"2","
+Attaching package: ‘dplyr’
+
+"
+"2","The following object is masked from ‘package:MASS’:
+
+    select
+
+"
+"2","The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+"
+"2","The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+"
+"0","# Use the average value for each attribute"
+"0","LeagueGoalkeeping.groupByPlayer <- LeagueGoalkeeping.data %>%"
+"0","                                 group_by(Player) %>%"
+"0","                                 summarise_all(mean)"
+"0",""
+"0","TournGoalkeeping.groupByPlayer <- TournGoalkeeping.data %>%"
+"0","                                 group_by(Player) %>%"
+"0","                                 summarise_all(mean)"

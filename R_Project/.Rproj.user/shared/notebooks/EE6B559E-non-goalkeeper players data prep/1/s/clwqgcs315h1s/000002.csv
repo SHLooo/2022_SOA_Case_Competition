@@ -1,0 +1,8 @@
+"0","# Use the average value for each attribute"
+"0","LeagueDefense.groupByPlayer <- LeagueDefense.data %>%"
+"0","                                 group_by(Player) %>%"
+"0","                                 summarise_all(mean)"
+"0",""
+"0","#TournDefense.groupByPlayer <- TournDefense.data %>%"
+"0","#                                 group_by(Player) %>%"
+"0","#                                 summarise_all(mean)"

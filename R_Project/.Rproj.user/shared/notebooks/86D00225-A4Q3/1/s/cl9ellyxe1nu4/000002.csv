@@ -1,0 +1,5 @@
+"0","getTSlabels <- function(ts, freqNames) {"
+"0","  month <- rep(freqNames, floor(length(ts)/frequency(ts)))"
+"0","  if(length(ts)%%frequency(ts) > 0) month <- c(month, freqNames[1:length(ts)%%frequency(ts)])"
+"0","  paste(month, floor(time(ts)))"
+"0","}"

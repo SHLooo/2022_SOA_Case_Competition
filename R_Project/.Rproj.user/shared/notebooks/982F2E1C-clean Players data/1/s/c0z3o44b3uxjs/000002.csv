@@ -1,0 +1,3 @@
+"0","library(""xlsx"")"
+"0","write.xlsx(League.JoinedTable.Tailored, file=""players_joined_subset.xlsx"", sheetName = ""League data"", append = FALSE)"
+"0","write.xlsx(Tourn.JoinedTable.Tailored, file=""players_joined_subset.xlsx"", sheetName = ""Tournament data"", append = TRUE)"

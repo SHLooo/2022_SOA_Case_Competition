@@ -1,0 +1,4 @@
+"0","library(""xlsx"")"
+"0","League_norm$Player <- LeagueGoalkeeping.groupByPlayer$Player"
+"0","League_norm$rank.pred <- rank.pred"
+"0","write.xlsx(League_norm, file=""goalkeeper ranking.xlsx"", sheetName = ""goalkeeper"", append = FALSE)"

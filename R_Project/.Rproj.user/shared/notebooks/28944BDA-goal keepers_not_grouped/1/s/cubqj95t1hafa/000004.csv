@@ -1,0 +1,3 @@
+"0","goalkeeping.attributes <- c(""Player"", ""Playing Time 90s"", ""Performance GA90"", ""Performance Save%"", ""Penalty Kicks Save%"")"
+"0","LeagueGoalkeeping.data <- LeagueGoalkeeping[, goalkeeping.attributes]"
+"0","TournGoalkeeping.data <- TournGoalkeeping[!is.na(TournGoalkeeping$`nation rank`), c(goalkeeping.attributes, ""Year"", ""nation rank"")]"

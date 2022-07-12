@@ -1,0 +1,15 @@
+"0","shoot.attributes <- c(""Player"", ""90s"", ""Gper90"", ""Standard SoT%"", ""Standard G/Sh"", ""Standard SoT/90"", ""Performance%"")"
+"0","LeagueShoot.data <- LeagueShoot[which(LeagueShoot$Pos != ""GK""), shoot.attributes]"
+"0","TournShoot.data <- TournShoot[which(TournShoot$Pos != ""GK""), c(shoot.attributes, ""Year"", ""nation rank"")]"
+"1","Error in `stop_subscript()`:
+! Can't subset columns that don't exist.
+x Column `nation rank` doesn't exist.
+Backtrace:
+[90m 1. [39m...[]
+[90m 2. [39m[1mtibble[22m:::`[.tbl_df`(...)
+[90m 3. [39mtibble:::vectbl_as_col_location(...)
+[90m 6. [39m[1mvctrs[22m::vec_as_location(j, n, names)
+[90m 7. [39mvctrs `<fn>`()
+[90m 8. [39mvctrs:::stop_subscript_oob(...)
+[90m 9. [39mvctrs:::stop_subscript(...)
+"

@@ -1,0 +1,425 @@
+knitr::opts_chunk$set(echo = TRUE)
+library("readxl")
+file_path <- "../data/2022-student-research-case-study-player-data.xlsx"
+#read in tables
+LeagueShoot <- read_excel(file_path, sheet = "League Shooting", skip = 11,col_names =T)
+LeaguePass <- read_excel(file_path, sheet = "League Passing", skip = 11,col_names =T)
+LeagueDefense <- read_excel(file_path, sheet = "League Defense", skip = 11,col_names =T, na = "N/A")
+TournShoot <- read_excel(file_path, sheet = "Tournament Shooting", skip = 11,col_names =T)
+TournPass <- read_excel(file_path, sheet = "Tournament Passing", skip = 11,col_names =T)
+TournDefense <- read_excel(file_path, sheet = "Tournament Defense", skip = 11,col_names =T, na = "N/A")
+tables <- list("LeagueShoot" = LeagueShoot, "LeaguePass" = LeaguePass, "LeagueDefense" = LeagueDefense, "TournShoot" = TournShoot, "TournPass" = TournPass, "TournDefense" = TournDefense)
+## observe the data
+# number of rows in each table
+print("number of rows in each table")
+for(table in tables){
+print(nrow(table))
+}
+# number of unique players in each table
+print("number of unique players in each table")
+for(table in tables){
+print(length(unique(table$Player)))
+}
+# find common players
+players <- tables[[1]]$Player
+for(table in tables){
+players = intersect(players, table$Player)
+}
+#finding the subsets
+LeagueShoot.subset <- LeagueShoot[]
+print("Player Occurance:")
+for(i in seq(max(table(LeagueDefense$Player)))) {
+print(paste(i, ":", sum(table(LeagueDefense$Player) == i)))
+}
+defense.attributes <- c("90s", "Tackles TklW", "Tackles Def 3rd", "Tackles Mid 3rd", "Tackles Att 3rd", "Vs Dribbles Past", "Pressures Succ", "Pressures %", "Blocks Blocks", "Int", "Clr", "Err")
+LeagueDefense.data <- LeagueDefense[,defense.attributes]
+# find out the columns with missing values
+for(attribute in defense.attributes){
+if(sum(is.na(LeagueDefense.data[,attribute]))) {
+print(paste(sum(is.na(LeagueDefense.data[,attribute])), "missing values in ", attribute))
+}
+}
+# the only column with missing values is "Pressures %",
+# the missing values are replace with 0, as they seem to be very small
+LeagueDefense.data[is.na(LeagueDefense.data[, "Pressures %"]), "Pressures %"] <- 0
+# Use the average value for each attribute
+library(dplyr)
+LeagueDefense.groupByPlayer <- LeagueDefense.data %>%
+group_by(Player) %>%
+summarise_all(mean)
+LeagueDefense.data
+defense.attributes <- c("Player","90s", "Tackles TklW", "Tackles Def 3rd", "Tackles Mid 3rd", "Tackles Att 3rd", "Vs Dribbles Past", "Pressures Succ", "Pressures %", "Blocks Blocks", "Int", "Clr", "Err")
+LeagueDefense.data <- LeagueDefense[,defense.attributes]
+# find out the columns with missing values
+for(attribute in defense.attributes){
+if(sum(is.na(LeagueDefense.data[,attribute]))) {
+print(paste(sum(is.na(LeagueDefense.data[,attribute])), "missing values in ", attribute))
+}
+}
+# the only column with missing values is "Pressures %",
+# the missing values are replace with 0, as they seem to be very small
+LeagueDefense.data[is.na(LeagueDefense.data[, "Pressures %"]), "Pressures %"] <- 0
+# Use the average value for each attribute
+library(dplyr)
+LeagueDefense.groupByPlayer <- LeagueDefense.data %>%
+group_by(Player) %>%
+summarise_all(mean)
+length(LeagueDefense.groupByPlayer)
+LeagueDefense.groupByPlayer
+nrow(LeagueDefense.groupByPlayer)
+print(paste(sum(is.na(LeagueDefense.data[,attribute])), "missing values in League Defense.", attribute))
+defense.attributes <- c("Player","90s", "Tackles TklW", "Tackles Def 3rd", "Tackles Mid 3rd", "Tackles Att 3rd", "Vs Dribbles Past", "Pressures Succ", "Pressures %", "Blocks Blocks", "Int", "Clr", "Err")
+LeagueDefense.data <- LeagueDefense[,defense.attributes]
+TournDefense.data <- LeagueDefense[,defense.attributes]
+# find out the columns with missing values
+for(attribute in defense.attributes){
+if(sum(is.na(LeagueDefense.data[,attribute]))) {
+print(paste(sum(is.na(LeagueDefense.data[,attribute])), "missing values in League Defense.", attribute))
+}
+}
+for(attribute in defense.attributes){
+if(sum(is.na(TournDefense.data[,attribute]))) {
+print(paste(sum(is.na(TournDefense.data[,attribute])), "missing values in Tournament Defense.", attribute))
+}
+}
+TournDefense.data <- TournDefense[,defense.attributes]
+# find out the columns with missing values
+for(attribute in defense.attributes){
+if(sum(is.na(LeagueDefense.data[,attribute]))) {
+print(paste(sum(is.na(LeagueDefense.data[,attribute])), "missing values in League Defense.", attribute))
+}
+}
+knitr::opts_chunk$set(echo = TRUE)
+library("readxl")
+file_path <- "../data/2022-student-research-case-study-player-data.xlsx"
+#read in tables
+LeagueShoot <- read_excel(file_path, sheet = "League Shooting", skip = 11,col_names =T)
+LeaguePass <- read_excel(file_path, sheet = "League Passing", skip = 11,col_names =T)
+LeagueDefense <- read_excel(file_path, sheet = "League Defense", skip = 11,col_names =T, na = "N/A")
+TournShoot <- read_excel(file_path, sheet = "Tournament Shooting", skip = 11,col_names =T)
+TournPass <- read_excel(file_path, sheet = "Tournament Passing", skip = 11,col_names =T)
+TournDefense <- read_excel(file_path, sheet = "Tournament Defense", skip = 11,col_names =T, na = "N/A")
+tables <- list("LeagueShoot" = LeagueShoot, "LeaguePass" = LeaguePass, "LeagueDefense" = LeagueDefense, "TournShoot" = TournShoot, "TournPass" = TournPass, "TournDefense" = TournDefense)
+## observe the data
+# number of rows in each table
+print("number of rows in each table")
+for(table in tables){
+print(nrow(table))
+}
+# number of unique players in each table
+print("number of unique players in each table")
+for(table in tables){
+print(length(unique(table$Player)))
+}
+print("Player Occurance:")
+for(i in seq(max(table(LeagueDefense$Player)))) {
+print(paste(i, ":", sum(table(LeagueDefense$Player) == i)))
+}
+defense.attributes <- c("Player","90s", "Tackles TklW", "Tackles Def 3rd", "Tackles Mid 3rd", "Tackles Att 3rd", "Vs Dribbles Past", "Pressures Succ", "Pressures %", "Blocks Blocks", "Int", "Clr", "Err")
+LeagueDefense.data <- LeagueDefense[,defense.attributes]
+TournDefense.data <- TournDefense[,defense.attributes]
+# find out the columns with missing values
+for(attribute in defense.attributes){
+if(sum(is.na(LeagueDefense.data[,attribute]))) {
+print(paste(sum(is.na(LeagueDefense.data[,attribute])), "missing values in League Defense.", attribute))
+}
+}
+for(attribute in defense.attributes){
+if(sum(is.na(TournDefense.data[,attribute]))) {
+print(paste(sum(is.na(TournDefense.data[,attribute])), "missing values in Tournament Defense.", attribute))
+}
+}
+# the only column with missing values is "Pressures %",
+# the missing values are replace with 0, as they seem to be very small
+LeagueDefense.data[is.na(LeagueDefense.data[, "Pressures %"]), "Pressures %"] <- 0
+# Use the average value for each attribute
+library(dplyr)
+LeagueDefense.groupByPlayer <- LeagueDefense.data %>%
+group_by("Player") %>%
+summarise_all(mean)
+TournDefense.groupByPlayer <- LeagueDefense.data %>%
+group_by("Player") %>%
+summarise_all(mean)
+# Use the average value for each attribute
+library(dplyr)
+LeagueDefense.groupByPlayer <- LeagueDefense.data %>%
+group_by(Player) %>%
+summarise_all(mean)
+LeagueDefense.groupByPlayer <- LeagueDefense.data %>%
+group_by(Player) %>%
+summarise_all(mean)
+knitr::opts_chunk$set(echo = TRUE)
+library("readxl")
+file_path = "2022-student-research-case-study-player-data.xlsx"
+#read in tables
+LeagueShoot <- read_excel(file_path, sheet = "League Shooting", skip = 11,col_names =T, na = "N/A")
+knitr::opts_chunk$set(echo = TRUE)
+library("readxl")
+file_path = "2022-student-research-case-study-player-data.xlsx"
+#read in tables
+LeagueShoot <- read_excel(file_path, sheet = "League Shooting", skip = 11,col_names =T, na = "N/A")
+print("Player Occurance:")
+for(i in seq(max(table(LeagueDefense$Player)))) {
+print(paste(i, ":", sum(table(LeagueDefense$Player) == i)))
+}
+defense.attributes <- c("Player","90s","Tackles TklW", "Tackles Def 3rd", "Tackles Mid 3rd", "Tackles Att 3rd", "Vs Dribbles Past", "Pressures Succ", "Pressures %", "Blocks Blocks", "Int", "Clr", "Err", "TklW%")
+LeagueDefense.data <- LeagueDefense[,defense.attributes]
+library("readxl")
+file_path = "../data/2022-student-research-case-study-player-data.xlsx"
+#read in tables
+LeagueShoot <- read_excel(file_path, sheet = "League Shooting", skip = 11,col_names =T, na = "N/A")
+library("readxl")
+file_path <- "../data/2022-student-research-case-study-player-data.xlsx"
+#read in tables
+LeagueShoot <- read_excel(file_path, sheet = "League Shooting", skip = 11,col_names =T, na = "N/A")
+getwd()
+file_path <- "data/2022-student-research-case-study-player-data.xlsx"
+## observe the data
+# number of rows in each table
+print("number of rows in each table")
+for(table in tables){
+print(nrow(table))
+}
+# number of unique players in each table
+print("number of unique players in each table")
+for(table in tables){
+print(length(unique(table$Player)))
+}
+defense.attributes <- c("Player", "90s", "Tackles Tkl", "Tackles TklW", "Vs Dribbles Past", "Pressures Succ", "Pressures %", "Blocks Blocks", "Int", "Clr", "Err", "TklW%")
+LeagueDefense.data <- LeagueDefense[,defense.attributes]
+library("readxl")
+file_path <- "data/2022-student-research-case-study-player-data.xlsx"
+#read in tables
+LeagueShoot <- read_excel(file_path, sheet = "League Shooting", skip = 11,col_names =T, na = "N/A")
+defense.attributes <- c("Player", "90s", "Tackles Tkl", "Tackles TklW", "Vs Dribbles Past", "Pressures Succ", "Pressures %", "Blocks Blocks", "Int", "Clr", "Err", "TklW%")
+LeagueDefense.data <- LeagueDefense[,defense.attributes]
+LeagueDefense[, Tackles Tkl]
+LeagueDefense[, "Tackles Tkl"]
+defense.attributes <- c("Player", "90s",  "Tackles TklW", "Vs Dribbles Past", "Pressures Succ", "Pressures %", "Blocks Blocks", "Int", "Clr", "Err", "TklW%")
+LeagueDefense.data <- LeagueDefense[,defense.attributes]
+defense.attributes <- c("Player")
+defense.attributes <- c("Player", "90s", "Tackles Tkl")
+LeagueDefense.data <- LeagueDefense[,defense.attributes]
+TournDefense.data <- TournDefense[,defense.attributes]
+defense.attributes <- c("Player", "90s", "Tackles Tkl", "Tackles TklW", "Vs Dribbles Past")
+LeagueDefense.data <- LeagueDefense[,defense.attributes]
+TournDefense.data <- TournDefense[,defense.attributes]
+defense.attributes <- c("Player", "90s", "Tackles Tkl", "Tackles TklW", "Vs Dribbles Past", "Pressures Succ", "Pressures %", "Blocks Blocks")
+LeagueDefense.data <- LeagueDefense[,defense.attributes]
+TournDefense.data <- TournDefense[,defense.attributes]
+defense.attributes <- c("Player", "90s", "Tackles Tkl", "Tackles TklW", "Vs Dribbles Past", "Pressures Succ", "Pressures %", "Blocks Blocks", "Int", "Clr", "Err", "TklW%")
+LeagueDefense.data <- LeagueDefense[,defense.attributes]
+LeagueShoot$`Gper90`=LeagueShoot$Gls/LeagueShoot$`90s`
+TournShoot$`Gper90`=TournShoot$Gls/TournShoot$`90s`
+LeagueShoot$`Performance%`=LeagueShoot$`Performance PKatt`/LeagueShoot$`Performance PK`
+TournShoot$`Performance%`=TournShoot$`Performance PKatt`/TournShoot$`Performance PK`
+LeagueDefense$`TklW%`=LeagueDefense$`Tackles TklW`/LeagueDefense$`Tackles Tkl`
+TournDefense$`TklW%`=TournDefense$`Tackles TklW`/TournDefense$`Tackles Tkl`
+LeagueShoot$`Gper90`=LeagueShoot$Gls/LeagueShoot$`90s`
+TournShoot$`Gper90`=TournShoot$Gls/TournShoot$`90s`
+LeagueShoot$`Performance%`=LeagueShoot$`Performance PKatt`/LeagueShoot$`Performance PK`
+TournShoot$`Performance%`=TournShoot$`Performance PKatt`/TournShoot$`Performance PK`
+LeagueDefense$'TklW%'=LeagueDefense$'Tackles TklW'/LeagueDefense$'Tackles Tkl'
+TournDefense$`TklW%`=TournDefense$`Tackles TklW`/TournDefense$`Tackles Tkl`
+defense.attributes <- c("Player", "90s", "Tackles Tkl", "Tackles TklW", "Vs Dribbles Past", "Pressures Succ", "Pressures %", "Blocks Blocks", "Int", "Clr", "Err", "TklW%")
+LeagueDefense.data <- LeagueDefense[,defense.attributes]
+TournDefense.data <- TournDefense[,defense.attributes]
+library("readxl")
+file_path <- "data/2022-student-research-case-study-player-data.xlsx"
+#read in tables
+LeagueShoot <- read_excel(file_path, sheet = "League Shooting", skip = 11,col_names =T, na = "N/A")
+library("readxl")
+file_path <- "../data/2022-student-research-case-study-player-data.xlsx"
+#read in tables
+LeagueShoot <- read_excel(file_path, sheet = "League Shooting", skip = 11,col_names =T, na = "N/A")
+getwd()
+library("readxl")
+file_path <- "/Users/liushuhao/Desktop/SOA Case Competitoin/data/2022-student-research-case-study-player-data.xlsx"
+#read in tables
+LeagueShoot <- read_excel(file_path, sheet = "League Shooting", skip = 11,col_names =T, na = "N/A")
+LeaguePass <- read_excel(file_path, sheet = "League Passing", skip = 11,col_names =T)
+LeagueDefense <- read_excel(file_path, sheet = "League Defense", skip = 11,col_names =T, na = "N/A")
+TournShoot <- read_excel(file_path, sheet = "Tournament Shooting", skip = 11,col_names =T, na = "N/A")
+TournPass <- read_excel(file_path, sheet = "Tournament Passing", skip = 11,col_names =T)
+TournDefense <- read_excel(file_path, sheet = "Tournament Defense", skip = 11,col_names =T, na = "N/A")
+tables <- list("LeagueShoot" = LeagueShoot, "LeaguePass" = LeaguePass, "LeagueDefense" = LeagueDefense, "TournShoot" = TournShoot, "TournPass" = TournPass, "TournDefense" = TournDefense)
+#### Load data
+```{r}
+file_path <- "/Users/liushuhao/Desktop/SOA Case Competitoin/data/2022-student-research-case-study-player-data.xlsx"
+#read in tables
+LeagueShoot <- read_excel(file_path, sheet = "League Shooting", skip = 11,col_names =T, na = "N/A")
+LeaguePass <- read_excel(file_path, sheet = "League Passing", skip = 11,col_names =T)
+LeagueDefense <- read_excel(file_path, sheet = "League Defense", skip = 11,col_names =T, na = "N/A")
+TournShoot <- read_excel(file_path, sheet = "Tournament Shooting", skip = 11,col_names =T, na = "N/A")
+TournPass <- read_excel(file_path, sheet = "Tournament Passing", skip = 11,col_names =T)
+TournDefense <- read_excel(file_path, sheet = "Tournament Defense", skip = 11,col_names =T, na = "N/A")
+tables <- list("LeagueShoot" = LeagueShoot, "LeaguePass" = LeaguePass, "LeagueDefense" = LeagueDefense, "TournShoot" = TournShoot, "TournPass" = TournPass, "TournDefense" = TournDefense)
+## observe the data
+# number of rows in each table
+print("number of rows in each table")
+for(table in tables){
+print(nrow(table))
+}
+# number of unique players in each table
+print("number of unique players in each table")
+for(table in tables){
+print(length(unique(table$Player)))
+}
+LeagueShoot$'Gper90'=LeagueShoot$Gls/LeagueShoot$'90s'
+TournShoot$'Gper90'=TournShoot$Gls/TournShoot$'90s'
+LeagueShoot$'Performance%'=LeagueShoot$'Performance PKatt'/LeagueShoot$'Performance PK'
+TournShoot$'Performance%'=TournShoot$'Performance PKatt'/TournShoot$'Performance PK'
+LeagueDefense$'TklW%'=LeagueDefense$'Tackles TklW'/LeagueDefense$'Tackles Tkl'
+TournDefense$'TklW%'=TournDefense$'Tackles TklW'/TournDefense$'Tackles Tkl'
+print("Player Occurance:")
+for(i in seq(max(table(LeagueDefense$Player)))) {
+print(paste(i, ":", sum(table(LeagueDefense$Player) == i)))
+}
+defense.attributes <- c("Player", "90s", "Tackles Tkl", "Tackles TklW", "Vs Dribbles Past", "Pressures Succ", "Pressures %", "Blocks Blocks", "Int", "Clr", "Err", "TklW%")
+LeagueDefense.data <- LeagueDefense[,defense.attributes]
+TournDefense.data <- TournDefense[,defense.attributes]
+# find out the columns with missing values
+for(attribute in defense.attributes){
+if(sum(is.na(LeagueDefense.data[,attribute]))) {
+print(paste(sum(is.na(LeagueDefense.data[,attribute])), "missing values in League Defense.", attribute))
+}
+}
+for(attribute in defense.attributes){
+if(sum(is.na(TournDefense.data[,attribute]))) {
+print(paste(sum(is.na(TournDefense.data[,attribute])), "missing values in Tournament Defense.", attribute))
+}
+}
+# the only column with missing values are "Pressures %" and "TklW%"
+# the missing values are replace with 0, as they seem to be very small
+LeagueDefense.data[is.na(LeagueDefense.data[, "Pressures %"]), "Pressures %"] <- 0
+TournDefense.data[is.na(TournDefense.data[, "Pressures %"]), "Pressures %"] <- 0
+LeagueDefense.data[is.na(LeagueDefense.data[, "TklW%"]), "TklW%"] <- 0
+TournDefense.data[is.na(TournDefense.data[, "TklW%"]), "TklW%"] <- 0
+# Use the average value for each attribute
+library(dplyr)
+# Use the average value for each attribute
+LeagueDefense.groupByPlayer <- LeagueDefense.data %>%
+group_by(Player) %>%
+summarise_all(mean)
+TournDefense.groupByPlayer <- TournDefense.data %>%
+group_by(Player) %>%
+summarise_all(mean)
+print("Player Occurance:")
+for(i in seq(max(table(LeaguePass$Player)))) {
+print(paste(i, ":", sum(table(LeaguePass$Player) == i)))
+}
+pass.attributes <- c("Player","90s","xA","A-xA","KP","Total Cmp%")
+LeaguePass.data <- LeaguePass[,pass.attributes]
+TournPass.data <- TournPass[,pass.attributes]
+# find out the columns with missing values
+for(attribute in pass.attributes){
+if(sum(is.na(LeaguePass.data[,attribute]))) {
+print(paste(sum(is.na(LeaguePass.data[,attribute])), "missing values in League Passing.", attribute))
+}
+}
+for(attribute in pass.attributes){
+if(sum(is.na(TournPass.data[,attribute]))) {
+print(paste(sum(is.na(TournPass.data[,attribute])), "missing values in Tournament Passing.", attribute))
+}
+}
+# the only column with missing values is "Total Cmp%",
+# the missing values are replace with 0, treated as outlier
+LeaguePass.data[is.na(LeaguePass.data[, "Total Cmp%"]), "Total Cmp%"] <- 0
+TournPass.data[is.na(TournPass.data[, "Total Cmp%"]), "Total Cmp%"] <- 0
+# Use the average value for each attribute
+library(dplyr)
+LeaguePass.groupByPlayer <- LeaguePass.data %>%
+group_by(Player) %>%
+summarise_all(mean)
+TournPass.groupByPlayer <- TournPass.data %>%
+group_by(Player) %>%
+summarise_all(mean)
+print("LeagueShoot Player Occurance:")
+for(i in seq(max(table(LeagueShoot$Player)))) {
+print(paste(i, ":", sum(table(LeagueShoot$Player) == i)))
+}
+print("TournShoot Player Occurance:")
+for(i in seq(max(table(TournShoot$Player)))) {
+print(paste(i, ":", sum(table(TournShoot$Player) == i)))
+}
+shoot.attributes <- c("Player","Gper90", "Standard SoT%", "Standard G/Sh", "Standard SoT/90","Performance%")
+LeagueShoot.data <- LeagueShoot[,shoot.attributes]
+TournShoot.data <- TournShoot[,shoot.attributes]
+# find out the columns with missing values
+for(attribute in shoot.attributes){
+if(sum(is.na(LeagueShoot.data[,attribute]))) {
+print(paste(sum(is.na(LeagueShoot.data[,attribute])), "missing values in League Forward.", attribute))
+}
+}
+for(attribute in shoot.attributes){
+if(sum(is.na(TournShoot.data[,attribute]))) {
+print(paste(sum(is.na(TournShoot.data[,attribute])), "missing values in Tournament Forward.", attribute))
+}
+}
+# the columns with missing values are "Standard SoT%","Standard G/Sh".
+# the missing values are replace with 0, as they seem to be very small
+LeagueForward.data[is.na(LeagueForward.data[, "Standard SoT%"]), "Standard SoT%"] <- 0
+# the columns with missing values are "Standard SoT%","Standard G/Sh".
+# the missing values are replace with 0, as they seem to be very small
+LeagueShoot.data[is.na(LeagueShoot.data), "Standard SoT%"] <- 0
+# the columns with missing values are "Standard SoT%","Standard G/Sh".
+# the missing values are replace with 0, as they seem to be very small
+LeagueShoot.data[is.na(LeagueShoot.data[, "Standard SoT%"]), "Standard SoT%"] <- 0
+LeagueShoot.data[is.na(LeagueShoot.data[, "Standard G/Sh"]), "Standard G/Sh"] <- 0
+LeagueShoot.data[is.na(LeagueShoot.data[, "Performance%"]), "Performance%"] <- 0
+TournShoot.data[is.na(TournShoot.data[, "Standard SoT%"]), "Standard SoT%"] <- 0
+TournShoot.data[is.na(TournShoot.data[, "Standard G/Sh"]), "Standard G/Sh"] <- 0
+TournShoot.data[is.na(TournShoot.data[, "Performance%"]), "Performance%"] <- 0
+# Use the average value for each attribute
+library(dplyr)
+LeagueShoot.groupByPlayer <- LeagueForward.data %>%
+group_by(Player) %>%
+summarise_all(mean)
+# Use the average value for each attribute
+LeagueShoot.groupByPlayer <- LeagueShoot.data %>%
+group_by(Player) %>%
+summarise_all(mean)
+TournShoot.groupByPlayer <- TournShoot.data %>%
+group_by(Player) %>%
+summarise_all(mean)
+tables.gbp <- list("ls.gbp" = LeagueShoot.groupByPlayer, "ts.gbp" = TournShoot.groupByPlayer, "ld,gbp" = LeagueDefense.groupByPlayer, "td.gbp" = TournDefense.groupByPlayer, "lp.gbp" = LeaguePass.groupByPlayer, "tp.gbp" = TournPass.groupByPlayer)
+print("number of rows in each table.gbp")
+for(table in tables.gbp){
+print(nrow(table))
+}
+League.JoinedTable=inner_join(inner_join(tables.gbp[[1]],tables.gbp[[3]],by="Player"),tables.gbp[[5]],by="Player")
+Tourn.JoinedTable=inner_join(inner_join(tables.gbp[[2]],tables.gbp[[4]],by="Player"),tables.gbp[[6]],by="Player")
+nrow(League.JoinedTable)
+nrow(Tourn.JoinedTable)
+Tourn.JoinedTable.Tailored=subset(Tourn.JoinedTable,Tourn.JoinedTable$Player %in% League.JoinedTable$Player)
+League.JoinedTable.Tailored=subset(League.JoinedTable,League.JoinedTable$Player %in% Tourn.JoinedTable$Player)
+#nrow(Tourn.JoinedTable.Tailored)
+#nrow(League.JoinedTable.Tailored)
+#Tourn.JoinedTable.Tailored$Player %in% League.JoinedTable.Tailored$Player
+#League.JoinedTable.Tailored$Player %in% Tourn.JoinedTable.Tailored$Player
+tables.gbp <- list("ls.gbp" = LeagueShoot.groupByPlayer, "ts.gbp" = TournShoot.groupByPlayer, "ld,gbp" = LeagueDefense.groupByPlayer, "td.gbp" = TournDefense.groupByPlayer, "lp.gbp" = LeaguePass.groupByPlayer, "tp.gbp" = TournPass.groupByPlayer)
+League.tables <- list(LeagueShoot.groupByPlayer, LeaguePass.groupByPlayer, LeagueDefense.groupByPlayer)
+Tourn.tables <- list(TournShoot.groupByPlayer, TournPass.groupByPlayer, TournDefense.groupByPlayer)
+League.JoinedTable=inner_join(inner_join(League.tables[[1]],League.tables[[2]],by="Player"),League.tables[[3]],by="Player")
+Tourn.JoinedTable=inner_join(inner_join(Tourn.tables[[1]],Tourn.tables[[2]],by="Player"),Tourn.tables[[3]],by="Player")
+nrow(League.JoinedTable)
+nrow(Tourn.JoinedTable)
+Tourn.JoinedTable.Tailored=subset(Tourn.JoinedTable,Tourn.JoinedTable$Player %in% League.JoinedTable$Player)
+League.JoinedTable.Tailored=subset(League.JoinedTable,League.JoinedTable$Player %in% Tourn.JoinedTable$Player)
+#nrow(Tourn.JoinedTable.Tailored)
+#nrow(League.JoinedTable.Tailored)
+#Tourn.JoinedTable.Tailored$Player %in% League.JoinedTable.Tailored$Player
+#League.JoinedTable.Tailored$Player %in% Tourn.JoinedTable.Tailored$Player
+tables.gbp <- list("ls.gbp" = LeagueShoot.groupByPlayer, "ts.gbp" = TournShoot.groupByPlayer, "ld,gbp" = LeagueDefense.groupByPlayer, "td.gbp" = TournDefense.groupByPlayer, "lp.gbp" = LeaguePass.groupByPlayer, "tp.gbp" = TournPass.groupByPlayer)
+League.tables <- list(LeagueShoot.groupByPlayer, LeaguePass.groupByPlayer, LeagueDefense.groupByPlayer)
+Tourn.tables <- list(TournShoot.groupByPlayer, TournPass.groupByPlayer, TournDefense.groupByPlayer)
+League.JoinedTable <- inner_join(inner_join(League.tables[[1]], League.tables[[2]], by="Player"), League.tables[[3]], by="Player")
+Tourn.JoinedTable <- inner_join(inner_join(Tourn.tables[[1]], Tourn.tables[[2]], by="Player"), Tourn.tables[[3]], by="Player")
+nrow(League.JoinedTable)
+nrow(Tourn.JoinedTable)
+Tourn.JoinedTable.Tailored=subset(Tourn.JoinedTable,Tourn.JoinedTable$Player %in% League.JoinedTable$Player)
+League.JoinedTable.Tailored=subset(League.JoinedTable,League.JoinedTable$Player %in% Tourn.JoinedTable$Player)
+nrow(Tourn.JoinedTable.Tailored)
+nrow(League.JoinedTable.Tailored)
+#Tourn.JoinedTable.Tailored$Player %in% League.JoinedTable.Tailored$Player
+#League.JoinedTable.Tailored$Player %in% Tourn.JoinedTable.Tailored$Player

@@ -1,0 +1,119 @@
+---
+title: "goal keeper"
+author: "Shuhao Liu"
+date: "27/02/2022"
+output: html_document
+---
+
+Load data
+
+```{r}
+library(readxl)
+library(dplyr)
+
+file_path <- "/Users/liushuhao/Desktop/SOA Case Competitoin/data/2022-student-research-case-study-player-data_modified.xlsx"
+
+#read in tables
+LeagueGoalkeeping <- read_excel(file_path, sheet = "League Goalkeeping", skip = 11,col_names =T, na = "N/A")
+TournGoalkeeping <- read_excel(file_path, sheet = "Tournament Goalkeeping", skip = 11,col_names =T)
+```
+
+Add rank to data
+
+```{r}
+TournResult2020 <- read_excel(file_path, sheet = "Tournament Results", range = "B11:C27", col_names =T, na = "N/A")
+TournResult2021 <- read_excel(file_path, sheet = "Tournament Results", range = "E11:F35", col_names =T, na = "N/A")
+
+TournGoalkeeping$"nation rank" = rep(NA, nrow(TournGoalkeeping))
+for(i in seq(1:nrow(TournResult2020))) {
+  nation <- TournResult2020$Country[i]
+  TournGoalkeeping$"nation rank"[which(TournGoalkeeping$Nation == nation & TournGoalkeeping$Year == 2020)] <- TournResult2020$"2020 Tournament Place"[i]
+}
+for(i in seq(1:nrow(TournResult2021))) {
+  nation <- TournResult2021$Country[i]
+  TournGoalkeeping$"nation rank"[which(TournGoalkeeping$Nation == nation & TournGoalkeeping$Year == 2021)] <- TournResult2021$"2021 Tournament Place"[i]
+}
+```
+
+
+Selecting variants:
+
+attributes: Playing Time 90s, Performance GA90, Performance Save%, Penalty Kicks Save%
+
+```{r}
+goalkeeping.attributes <- c("Player", "Playing Time 90s", "Performance GA90", "Performance Save%", "Penalty Kicks Save%")
+LeagueGoalkeeping.data <- LeagueGoalkeeping[, goalkeeping.attributes]
+TournGoalkeeping.data <- TournGoalkeeping[!is.na(TournGoalkeeping$`nation rank`), c(goalkeeping.attributes, "Year", "nation rank")]
+```
+
+Fill in missing data
+
+```{r}
+for(attribute in goalkeeping.attributes){
+  if(sum(is.na(LeagueGoalkeeping.data[,attribute]))) {
+    # find out the columns with missing values
+    print(paste(sum(is.na(LeagueGoalkeeping.data[,attribute])), "missing values in League Goalkeeping: ", attribute))
+    # fill the missing values with 0
+    LeagueGoalkeeping.data[is.na(LeagueGoalkeeping.data[, attribute]), attribute] <- 0
+  }
+}
+for(attribute in goalkeeping.attributes){
+  if(sum(is.na(TournGoalkeeping.data[,attribute]))) {
+    # find out the columns with missing values
+    print(paste(sum(is.na(TournGoalkeeping.data[,attribute])), "missing values in Tournament Goalkeeping: ", attribute))
+    # fill the missing values with 0
+    TournGoalkeeping.data[is.na(TournGoalkeeping.data[, attribute]), attribute] <- 0
+  }
+}
+```
+
+Group rows by player
+
+```{r}
+# Use the average value for each attribute
+LeagueGoalkeeping.groupByPlayer <- LeagueGoalkeeping.data %>%
+                                 group_by(Player) %>%
+                                 summarise_all(mean)
+
+#TournGoalkeeping.groupByPlayer <- TournGoalkeeping.data %>%
+#                                 group_by(Player) %>%
+#                                 summarise_all(mean)
+```
+
+fit model
+
+```{r}
+set.seed(123456)
+#Generate a random number that is 90% of the total number of rows in dataset.
+ran <- sample(1:nrow(TournGoalkeeping.data), 0.9 * nrow(TournGoalkeeping.data))
+
+#the normalization function is created
+nor <-function(x) { (x-min(x))/(max(x)-min(x)) }
+
+playerIndex <- which(colnames(TournGoalkeeping.data) == "Player")
+rankIndex <- which(colnames(TournGoalkeeping.data) == "nation rank")
+yearIndex <- which(colnames(TournGoalkeeping.data) == "Year")
+
+Tourn_norm <- as.data.frame(lapply(TournGoalkeeping.data[,-c(playerIndex,rankIndex,yearIndex)], nor))
+
+Tourn_train <- Tourn_norm[ran,] 
+Tourn_test <- Tourn_norm[-ran,] 
+
+Tourn_target_category <- as.data.frame(TournGoalkeeping.data)[ran,rankIndex]
+Tourn_test_category <- as.data.frame(TournGoalkeeping.data)[-ran,rankIndex]
+
+library(class)
+pr <- knn(Tourn_train,Tourn_test,cl=Tourn_target_category, k=1, use.all = TRUE)
+allowed.rank.error <- 3
+accuracy <- sum(abs(as.numeric(pr) - as.numeric(Tourn_test_category)) <= allowed.rank.error) / length(pr)
+accuracy
+```
+
+```{r}
+League_norm <- as.data.frame(lapply(LeagueGoalkeeping.groupByPlayer[, -playerIndex], nor))
+Target_category <- as.data.frame(TournGoalkeeping.data)[, rankIndex]
+pred <- knn(Tourn_norm,League_norm,cl=Target_category,k=1)
+LeagueGoalkeeping.groupByPlayer$rank.pred <- pred
+table(LeagueGoalkeeping.groupByPlayer$rank.pred)
+```
+

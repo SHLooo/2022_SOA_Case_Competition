@@ -1,0 +1,4 @@
+"0","players <- c(""C. Langa"", ""K. Balogun"", ""X. Pavlovi?"", ""C. Medina"", ""G. Jumbe"", ""G. Nugroho"", ""H. Francisco"",""L. Kyambadde"",""X. Leroy"",""Z. Griffiths"",""M. Naluwooza"",""H. Adjei"",""O. Wanjala"",""D. Bergmann"",""Q. Barbier"",""D. Abiria"",""T. Zoabi"")"
+"0","goalkeepers <- c(""Y. Larsen"",""Y. Ruggiero"")"
+"0","playerIndex <- sapply(players, function(x) {which(League.JoinedTable.norm$Player == x)})"
+"0","playerData = League.JoinedTable.norm[unlist(playerIndex), ]"

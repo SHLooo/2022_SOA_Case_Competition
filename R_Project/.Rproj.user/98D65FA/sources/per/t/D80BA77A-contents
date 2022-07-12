@@ -1,0 +1,49 @@
+---
+title: "Teams Radar Plot"
+author: "Shuhao Liu"
+date: "21/03/2022"
+output: html_document
+---
+
+
+```{r}
+library(fmsb)
+```
+
+```{r}
+indicators = data.frame(
+  "Gper90" = c(0.371349003, 0.367688, 0.371484),
+  "Total Cmp%" = c(0.721772337,	0.685312,	0.654018),
+  "TklW%" = c(0.722205748,	0.711882,	0.698599),
+  "save %" = c(0.774345785, 0.679160008, 0.679160008),
+  row.names = c("Team.Rarita", "2020 Champion", "2021 Champion"))
+#, "Player Average"
+max_min <- data.frame(
+  "Gper90" = c(0.375, 0.362),
+  "Total Cmp%" = c(0.75, 0.65),
+  "TklW%" = c(0.75, 0.66),
+  "save %" = c(0.8, 0.65),
+  row.names = c("Max", "Min")
+)
+
+par(mar=c(0.2,0.2,0.2,0.2))
+#png(file="radarplot.png")
+color <- c( "light blue", "yellow", "pink", "red")
+radarchart(rbind(max_min, indicators),
+           vlabels = c("Average Goal\n per 90 Minutes", "Pass Completion\n Percentage", "Sucessful Tackle\n Percentage", "Shot Saves\n Percentage"),
+           vlcex = 0.8,
+           plwd = 2,
+           plty = 1,
+           cglty = 1,
+           cglwd = 0.7,
+           pcol = color,
+           pfcol = scales::alpha(c(color[-4], NULL), 0.6),
+           cglcol = "dark grey"
+)
+legend("bottomright", col = color, lty = c(1,1,1,0), lwd = 2, pch = c(NA,NA,NA,19), cex = 1, box.lty = 0, legend = c("Team Rarita", "2020 Champion", "2021 Champion", "70 percentile"))
+points(0, 0.3636129-0.07, col = "red", pch = 19, cex = 0.7)
+#text(0, 0.3636129-0.07, col = "black", pch = 19, cex = 0.8, label = "0.36")
+points(-0.669848115+0.31, 0, col = "red", pch = 19, cex = 0.7)
+points(0, -0.6950813+0.19, col = "red", pch = 19, cex = 0.7)
+points(0.6776368-0.34, 0, col = "red", pch = 19, cex = 0.7)
+```

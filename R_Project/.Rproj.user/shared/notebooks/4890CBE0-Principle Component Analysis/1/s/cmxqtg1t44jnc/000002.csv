@@ -1,0 +1,4 @@
+"0","LDefense.NAattributes <- c(2, 3, 4, 6, 31, 32)"
+"0","TDefense.NAattributes <- c(2, 3, 5, 30, 31)"
+"0","LeagueDefense.data <- LeagueDefense[which(LeagueDefense$Pos != ""GK""), -LDefense.NAattributes]"
+"0","TournDefense.data <- TournDefense[which(TournDefense$Pos != ""GK""), -TDefense.NAattributes]"

@@ -1,0 +1,5 @@
+"0","# decide how many components to use"
+"0","eigenvalues <- eigen(cor(League_norm))$values"
+"0","eigenvaluesProp <- cumsum(eigenvalues)/sum(eigenvalues)"
+"0","par(mfrow = c(1,2), cex = 0.8)"
+"0","plot(eigenvalues, main = ""Eigenvalues of the Correlation Matrix"", sub = ""Figure 2.1 Eigenvalues of the Correlation Matrix"")"

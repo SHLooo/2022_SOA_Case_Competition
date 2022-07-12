@@ -1,0 +1,1 @@
+"0","hist(C, breaks = 25, probability = T, xlab = ""probability of ranked top 10"", main = ""Histogram of the Probability of Achieving Championship"", sub = ""Figure 2.4 Histogram of the Probability of Achieving Championship"")"

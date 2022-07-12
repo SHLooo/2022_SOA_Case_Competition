@@ -1,0 +1,232 @@
+---
+title: "knn all attributes_not grouped"
+output: html_document
+---
+
+```{r library}
+library(readxl)
+library(dplyr)
+```
+
+Load data
+```{r}
+file_path <- "/Users/liushuhao/Desktop/SOA Case Competitoin/data/2022-student-research-case-study-player-data_modified.xlsx"
+
+#read in tables
+LeagueShoot <- read_excel(file_path, sheet = "League Shooting", skip = 11,col_names =T, na = "N/A")
+LeaguePass <- read_excel(file_path, sheet = "League Passing", skip = 11,col_names =T)
+LeagueDefense <- read_excel(file_path, sheet = "League Defense", skip = 11,col_names =T, na = "N/A")
+TournShoot <- read_excel(file_path, sheet = "Tournament Shooting", skip = 11,col_names =T, na = "N/A")
+TournPass <- read_excel(file_path, sheet = "Tournament Passing", skip = 11,col_names =T)
+TournDefense <- read_excel(file_path, sheet = "Tournament Defense", skip = 11,col_names =T, na = "N/A")
+tables <- list("LeagueShoot" = LeagueShoot, "LeaguePass" = LeaguePass, "LeagueDefense" = LeagueDefense, "TournShoot" = TournShoot, "TournPass" = TournPass, "TournDefense" = TournDefense)
+```
+
+
+#### Defender analysis ####
+
+```{r}
+LDefense.NAattributes <- c(2, 3, 4, 6, 31, 32)
+TDefense.NAattributes <- c(2, 3, 5, 30)
+LeagueDefense.data <- LeagueDefense[which(LeagueDefense$Pos != "GK"), -LDefense.NAattributes]
+TournDefense.data <- TournDefense[which(TournDefense$Pos != "GK"), -TDefense.NAattributes]
+```
+
+Fill in missing data
+
+```{r}
+for(attribute in 1:ncol(LeagueDefense.data)){
+  if(sum(is.na(LeagueDefense.data[,attribute]))) {
+    # find out the columns with missing values
+    print(paste(sum(is.na(LeagueDefense.data[,attribute])), "missing values in League Defense.", attribute))
+    # fill the missing values with 0
+    LeagueDefense.data[is.na(LeagueDefense.data[, attribute]), attribute] <- 0
+  }
+}
+for(attribute in 1:ncol(TournDefense.data)){
+  if(sum(is.na(TournDefense.data[,attribute]))) {
+    # find out the columns with missing values
+    print(paste(sum(is.na(TournDefense.data[,attribute])), "missing values in Tournament Defense.", attribute))
+    # fill the missing values with 0
+    TournDefense.data[is.na(TournDefense.data[, attribute]), attribute] <- 0
+  }
+}
+```
+
+
+Group rows by player
+
+```{r}
+# Use the average value for each attribute
+LeagueDefense.groupByPlayer <- LeagueDefense.data %>%
+                                 group_by(Player) %>%
+                                 summarise_all(mean)
+```
+
+#### Passing analysis ####
+
+Selecting variants
+
+attributes: 90s, xA, A-xA, KP, Total Cmp%
+```{r}
+LPass.NAattributes <- c(2, 3, 4, 6, 30, 31)
+TPass.NAattributes <- c(2, 3, 5, 29)
+LeaguePass.data <- LeaguePass[which(LeaguePass$Pos != "GK"), -LPass.NAattributes]
+TournPass.data <- TournPass[which(TournPass$Pos != "GK"), -TPass.NAattributes]
+```
+
+Fill in missing data
+
+```{r}
+# find out the columns with missing values
+for(attribute in 1:ncol(LeaguePass.data)){
+  if(sum(is.na(LeaguePass.data[,attribute]))) {
+    # find out the columns with missing values
+    print(paste(sum(is.na(LeaguePass.data[,attribute])), "missing values in League Passing.", attribute))
+    # fill the missing values with 0
+    LeaguePass.data[is.na(LeaguePass.data[, attribute]), attribute] <- 0
+  }
+}
+for(attribute in 1:ncol(TournPass.data)){
+  if(sum(is.na(TournPass.data[,attribute]))) {
+    # find out the columns with missing values
+    print(paste(sum(is.na(TournPass.data[,attribute])), "missing values in Tournament Passing.", attribute))
+    # fill the missing values with 0
+    TournPass.data[is.na(TournPass.data[, attribute]), attribute] <- 0
+  }
+}
+```
+
+Group rows by player
+
+```{r}
+# Use the average value for each attribute
+library(dplyr)
+LeaguePass.groupByPlayer <- LeaguePass.data %>%
+                              group_by(Player) %>%
+                              summarise_all(mean)
+```
+
+
+#### Shooting analysis ####
+
+Selecting variants
+
+```{r}
+LShoot.NAattributes <- c(2, 3, 4, 6, 17, 20, 21, 22, 23, 24, 25, 26)
+TShoot.NAattributes <- c(2, 3, 5, 18)
+LeagueShoot.data <- LeagueShoot[which(LeagueShoot$Pos != "GK"), -LShoot.NAattributes]
+TournShoot.data <- TournShoot[which(TournShoot$Pos != "GK"), -TShoot.NAattributes]
+```
+
+```{r}
+# find out the columns with missing values
+for(attribute in 1:ncol(LeagueShoot.data)){
+  if(sum(is.na(LeagueShoot.data[,attribute]))) {
+    print(paste(sum(is.na(LeagueShoot.data[,attribute])), "missing values in League Forward.", attribute))
+    LeagueShoot.data[is.na(LeagueShoot.data[, attribute]), attribute] <- 0
+  }
+}
+for(attribute in 1:ncol(TournShoot.data)){
+  if(sum(is.na(TournShoot.data[,attribute]))) {
+    print(paste(sum(is.na(TournShoot.data[,attribute])), "missing values in Tournament Forward.", attribute))
+    TournShoot.data[is.na(TournShoot.data[, attribute]), attribute] <- 0
+  }
+}
+```
+
+
+Group rows by player
+
+```{r}
+# Use the average value for each attribute
+LeagueShoot.groupByPlayer <- LeagueShoot.data %>%
+                                 group_by(Player) %>%
+                                 summarise_all(mean)
+```
+
+Note: All players in tournament does not occur more than twice
+
+```{r eval = F}
+for(player in unique(TournDefense.data$Player)) {
+  s <- length(which(TournDefense.data$Player == player))
+  if(s > 2) print(s)
+}
+for(player in unique(TournPass.data$Player)) {
+  s <- length(which(TournPass.data$Player == player))
+  if(s > 2) print(s)
+}
+for(player in unique(TournShoot.data$Player)) {
+  s <- length(which(TournShoot.data$Player == player))
+  if(s > 2) print(s)
+}
+```
+
+#### join tables
+```{r}
+League.tables <- list(LeagueShoot.groupByPlayer, LeaguePass.groupByPlayer, LeagueDefense.groupByPlayer)
+Tourn.tables <- list(TournShoot.data, TournPass.data, TournDefense.data)
+
+League.JoinedTable <- inner_join(inner_join(League.tables[[1]], League.tables[[2]], by="Player"), League.tables[[3]], by="Player")
+Tourn.JoinedTable <- inner_join(inner_join(Tourn.tables[[1]], Tourn.tables[[2]], by=c("Player", "Year")), Tourn.tables[[3]], by=c("Player", "Year"))
+
+# find the average playing time
+League.JoinedTable$"90s" <- (League.JoinedTable$"90s" + League.JoinedTable$"90s.x" + League.JoinedTable$"90s.y")/3
+Tourn.JoinedTable$"90s" <- (Tourn.JoinedTable$"90s" + Tourn.JoinedTable$"90s.x" + Tourn.JoinedTable$"90s.y")/3
+League.JoinedTable <- League.JoinedTable[ , !(names(League.JoinedTable) %in% c("90s.x", "90s.y"))]
+Tourn.JoinedTable <- Tourn.JoinedTable[ , !(names(Tourn.JoinedTable) %in% c("90s.x", "90s.y"))]
+nrow(League.JoinedTable)
+nrow(Tourn.JoinedTable)
+```
+
+```{r}
+for(k in 5:15) {
+A = 0
+for (i in 1:50) {
+
+#set.seed(123)
+#Generate a random number that is 90% of the total number of rows in dataset.
+ran <- sample(1:nrow(Tourn.JoinedTable), 0.8 * nrow(Tourn.JoinedTable))
+
+#the normalization function is created
+norm <-function(x) { 
+  upper = quantile(x, .98)
+  lower = quantile(x, .02)
+  x_norm <- (x-lower)/(upper-lower)
+  x_norm[which(x_norm > 1)] = 1
+  x_norm[which(x_norm < 0)] = 0
+  x_norm
+}
+
+playerIndex <- which(colnames(Tourn.JoinedTable) == "Player")
+rankIndex <- which(colnames(Tourn.JoinedTable) == "nation rank")
+yearIndex <- which(colnames(Tourn.JoinedTable) == "Year")
+Tourn_norm <- as.data.frame(lapply(Tourn.JoinedTable[,-c(playerIndex,rankIndex,yearIndex)], norm))
+
+Tourn_train <- Tourn_norm[ran,] 
+Tourn_test <- Tourn_norm[-ran,] 
+
+Tourn_target_category <- as.data.frame(Tourn.JoinedTable)[ran,rankIndex]
+Tourn_test_category <- as.data.frame(Tourn.JoinedTable)[-ran,rankIndex]
+
+library(class)
+#run knn function
+#k <- 5
+error <- 9
+pr <- knn(Tourn_train, Tourn_test, cl=Tourn_target_category, k=k,use.all = TRUE)
+accuracy <- sum(abs(as.numeric(pr) - as.numeric(Tourn_test_category)) <= error) / length(pr)
+A = A + accuracy
+#accuracy
+}
+print(paste(k, A/50))
+}
+```
+
+```{r}
+LeagePlayerIndex <- which(colnames(League.JoinedTable) == "Player")
+League_norm <- as.data.frame(lapply(League.JoinedTable[,-LeagePlayerIndex], norm))
+Target_category <- as.data.frame(Tourn.JoinedTable)[,rankIndex]
+predRank <- knn(Tourn_norm,League_norm,cl=Target_category,k=298)
+#League.JoinedTable$"Pred Rank" <- predRank
+table(predRank)
+```

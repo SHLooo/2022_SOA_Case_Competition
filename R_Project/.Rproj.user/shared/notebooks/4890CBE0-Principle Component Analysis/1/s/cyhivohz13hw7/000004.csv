@@ -1,0 +1,1 @@
+"0","plot(eigenvaluesProp, xlab = ""number of components"", ylab = ""proportion"", main = ""Proportion of Variation Included"", sub = ""Figure 2.2 Variation explained corresponding to the number of components used in PCA"")"

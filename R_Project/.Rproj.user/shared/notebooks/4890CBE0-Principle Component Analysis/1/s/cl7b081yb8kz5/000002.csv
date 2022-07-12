@@ -1,0 +1,2 @@
+"0","#hist(B, breaks = 12, probability = T, xlab = ""probability of ranked top 10"", main = ""Histogram of the Probability Reaching Top 10"")"
+"0","hist(C, breaks = 25, probability = T, xlab = ""probability of ranked top 10"", main = ""Histogram of the Probability Reaching Top 1"")"

@@ -1,0 +1,352 @@
+---
+title: "Principle Component Analysis"
+author: "Shuhao Liu"
+date: "23/03/2022"
+output: html_document
+---
+---
+title: "knn all attributes"
+output: html_document
+---
+
+```{r library}
+library(readxl)
+library(dplyr)
+```
+
+Load data
+```{r}
+file_path <- "/Users/liushuhao/Desktop/SOA Case Competitoin/data/2022-student-research-case-study-player-data_modified.xlsx"
+
+#read in tables
+LeagueShoot <- read_excel(file_path, sheet = "League Shooting", skip = 11,col_names =T, na = "N/A")
+LeaguePass <- read_excel(file_path, sheet = "League Passing", skip = 11,col_names =T)
+LeagueDefense <- read_excel(file_path, sheet = "League Defense", skip = 11,col_names =T, na = "N/A")
+TournShoot <- read_excel(file_path, sheet = "Tournament Shooting", skip = 11,col_names =T, na = "N/A")
+TournPass <- read_excel(file_path, sheet = "Tournament Passing", skip = 11,col_names =T)
+TournDefense <- read_excel(file_path, sheet = "Tournament Defense", skip = 11,col_names =T, na = "N/A")
+tables <- list("LeagueShoot" = LeagueShoot, "LeaguePass" = LeaguePass, "LeagueDefense" = LeagueDefense, "TournShoot" = TournShoot, "TournPass" = TournPass, "TournDefense" = TournDefense)
+```
+
+
+calculate %s
+```{r eval=FALSE}
+LeagueShoot$'Gls' <- LeagueShoot$'Gls'/LeagueShoot$'90s'
+LeagueShoot$'Performance PKatt' <- LeagueShoot$'Performance PKatt'/LeagueShoot$'Performance PK'
+TournShoot$'Gls' <- TournShoot$Gls/TournShoot$'90s'
+TournShoot$'Performance PKatt' <- TournShoot$'Performance PKatt'/TournShoot$'Performance PK'
+
+LeagueDefense$'Tackles TklW' <- LeagueDefense$'Tackles TklW'/LeagueDefense$'Tackles Tkl'
+LeagueDefense$'Tackles Tkl' <- LeagueDefense$'Tackles Tkl'/LeagueDefense$'90s'
+LeagueDefense$'Vs Dribbles Past' <- LeagueDefense$'Vs Dribbles Past'/LeagueDefense$'90s'
+LeagueDefense$'Pressures Succ' <- LeagueDefense$'Pressures Succ'/LeagueDefense$'Pressures Press'
+LeagueDefense$'Blocks Blocks' <- LeagueDefense$'Blocks Blocks'/LeagueDefense$'90s'
+LeagueDefense$'Int' <- LeagueDefense$'Int'/LeagueDefense$'90s'
+LeagueDefense$'Clr' <- LeagueDefense$'Clr'/LeagueDefense$'90s'
+LeagueDefense$'Err' <- LeagueDefense$'Err'/LeagueDefense$'90s'
+TournDefense$'Tackles TklW' <- TournDefense$'Tackles TklW'/TournDefense$'Tackles Tkl'
+TournDefense$'Tackles Tkl' <- TournDefense$'Tackles Tkl'/TournDefense$'90s'
+TournDefense$'Vs Dribbles Past' <- TournDefense$'Vs Dribbles Past'/TournDefense$'90s'
+TournDefense$'Pressures Succ' <- TournDefense$'Pressures Succ'/TournDefense$'Pressures Press'
+TournDefense$'Blocks Blocks' <- TournDefense$'Blocks Blocks'/TournDefense$'90s'
+TournDefense$'Int' <- TournDefense$'Int'/TournDefense$'90s'
+TournDefense$'Clr' <- TournDefense$'Clr'/TournDefense$'90s'
+TournDefense$'Err' <- TournDefense$'Err'/TournDefense$'90s'
+```
+
+fix infinity & -infinity %
+```{r eval=FALSE}
+LeagueShoot$'Gls'[which(LeagueShoot$'Gls' == Inf | LeagueShoot$'Gls' == -Inf)] <- 0
+TournShoot$'Gls'[which(TournShoot$'Gls' == Inf | TournShoot$'Gls' == -Inf)] <- 0
+LeagueShoot$'Performance PKatt'[which(LeagueShoot$'Performance PKatt' == Inf | LeagueShoot$'Performance PKatt' == -Inf)] <- 0
+TournShoot$'Performance PKatt'[which(TournShoot$'Performance PKatt' == Inf | TournShoot$'Performance PKatt' == -Inf)] <- 0
+
+LeagueDefense$'Tackles TklW'[which(LeagueDefense$'Tackles TklW' == Inf | LeagueDefense$'Tackles TklW' == -Inf)] <- 0
+TournDefense$'Tackles TklW'[which(TournDefense$'Tackles TklW' == Inf | TournDefense$'Tackles TklW' == -Inf)] <- 0
+LeagueDefense$'Tackles Tkl'[which(LeagueDefense$'Tackles Tkl' == Inf | LeagueDefense$'Tackles Tkl' == -Inf)] <- 0
+TournDefense$'Tackles Tkl'[which(TournDefense$'Tackles Tkl' == Inf | TournDefense$'Tackles Tkl' == -Inf)] <- 0
+LeagueDefense$'Vs Dribbles Past'[which(LeagueDefense$'Vs Dribbles Past' == Inf | LeagueDefense$'Vs Dribbles Past' == -Inf)] <- 0
+TournDefense$'Vs Dribbles Past'[which(TournDefense$'Vs Dribbles Past' == Inf | TournDefense$'Vs Dribbles Past' == -Inf)] <- 0
+LeagueDefense$'Pressures Succ'[which(LeagueDefense$'Pressures Succ' == Inf | LeagueDefense$'Pressures Succ' == -Inf)] <- 0
+TournDefense$'Pressures Succ'[which(TournDefense$'Pressures Succ' == Inf | TournDefense$'Pressures Succ' == -Inf)] <- 0
+LeagueDefense$'Blocks Blocks'[which(LeagueDefense$'Blocks Blocks' == Inf | LeagueDefense$'Blocks Blocks' == -Inf)] <- 0
+TournDefense$'Blocks Blocks'[which(TournDefense$'Blocks Blocks' == Inf | TournDefense$'Blocks Blocks' == -Inf)] <- 0
+LeagueDefense$'Int'[which(LeagueDefense$'Int' == Inf | LeagueDefense$'Int' == -Inf)] <- 0
+TournDefense$'Int'[which(TournDefense$'Int' == Inf | TournDefense$'Int' == -Inf)] <- 0
+LeagueDefense$'Clr'[which(LeagueDefense$'Clr' == Inf | LeagueDefense$'Clr' == -Inf)] <- 0
+TournDefense$'Clr'[which(TournDefense$'Clr' == Inf | TournDefense$'Clr' == -Inf)] <- 0
+LeagueDefense$'Err'[which(LeagueDefense$'Err' == Inf | LeagueDefense$'Err' == -Inf)] <- 0
+TournDefense$'Err'[which(TournDefense$'Err' == Inf | TournDefense$'Err' == -Inf)] <- 0
+```
+
+#### Defender analysis ####
+
+```{r}
+LDefense.NAattributes <- c(2, 3, 4, 6, 31, 32)
+TDefense.NAattributes <- c(2, 3, 5, 30, 31)
+LeagueDefense.data <- LeagueDefense[which(LeagueDefense$Pos != "GK"), -LDefense.NAattributes]
+TournDefense.data <- TournDefense[which(TournDefense$Pos != "GK"), -TDefense.NAattributes]
+```
+
+Fill in missing data
+
+```{r}
+for(attribute in 1:ncol(LeagueDefense.data)){
+  if(sum(is.na(LeagueDefense.data[,attribute]))) {
+    # find out the columns with missing values
+    print(paste(sum(is.na(LeagueDefense.data[,attribute])), "missing values in League Defense.", attribute))
+    # fill the missing values with 0
+    LeagueDefense.data[is.na(LeagueDefense.data[, attribute]), attribute] <- 0
+  }
+}
+for(attribute in 1:ncol(TournDefense.data)){
+  if(sum(is.na(TournDefense.data[,attribute]))) {
+    # find out the columns with missing values
+    print(paste(sum(is.na(TournDefense.data[,attribute])), "missing values in Tournament Defense.", attribute))
+    # fill the missing values with 0
+    TournDefense.data[is.na(TournDefense.data[, attribute]), attribute] <- 0
+  }
+}
+```
+
+
+Group rows by player
+
+```{r}
+# Use the average value for each attribute
+LeagueDefense.groupByPlayer <- LeagueDefense.data %>%
+                                 group_by(Player) %>%
+                                 summarise_all(mean)
+
+TournDefense.groupByPlayer <- TournDefense.data %>%
+                                 group_by(Player) %>%
+                                 summarise_all(mean)
+```
+
+#### Passing analysis ####
+
+Selecting variants
+
+attributes: 90s, xA, A-xA, KP, Total Cmp%
+```{r}
+LPass.NAattributes <- c(2, 3, 4, 6, 30, 31)
+TPass.NAattributes <- c(2, 3, 5, 29, 30)
+LeaguePass.data <- LeaguePass[which(LeaguePass$Pos != "GK"), -LPass.NAattributes]
+TournPass.data <- TournPass[which(TournPass$Pos != "GK"), -TPass.NAattributes]
+```
+
+Fill in missing data
+
+```{r}
+# find out the columns with missing values
+for(attribute in 1:ncol(LeaguePass.data)){
+  if(sum(is.na(LeaguePass.data[,attribute]))) {
+    # find out the columns with missing values
+    print(paste(sum(is.na(LeaguePass.data[,attribute])), "missing values in League Passing.", attribute))
+    # fill the missing values with 0
+    LeaguePass.data[is.na(LeaguePass.data[, attribute]), attribute] <- 0
+  }
+}
+for(attribute in 1:ncol(TournPass.data)){
+  if(sum(is.na(TournPass.data[,attribute]))) {
+    # find out the columns with missing values
+    print(paste(sum(is.na(TournPass.data[,attribute])), "missing values in Tournament Passing.", attribute))
+    # fill the missing values with 0
+    TournPass.data[is.na(TournPass.data[, attribute]), attribute] <- 0
+  }
+}
+```
+
+Group rows by player
+
+```{r}
+# Use the average value for each attribute
+library(dplyr)
+LeaguePass.groupByPlayer <- LeaguePass.data %>%
+                              group_by(Player) %>%
+                              summarise_all(mean)
+
+TournPass.groupByPlayer <- TournPass.data %>%
+                             group_by(Player) %>%
+                             summarise_all(mean)
+```
+
+
+#### Shooting analysis ####
+
+Selecting variants
+
+```{r}
+LShoot.NAattributes <- c(2, 3, 4, 6, 17, 20, 21, 22, 23, 24, 25, 26)
+TShoot.NAattributes <- c(2, 3, 5, 18, 19)
+LeagueShoot.data <- LeagueShoot[which(LeagueShoot$Pos != "GK"), -LShoot.NAattributes]
+TournShoot.data <- TournShoot[which(TournShoot$Pos != "GK"), -TShoot.NAattributes]
+```
+
+```{r}
+# find out the columns with missing values
+for(attribute in 1:ncol(LeagueShoot.data)){
+  if(sum(is.na(LeagueShoot.data[,attribute]))) {
+    print(paste(sum(is.na(LeagueShoot.data[,attribute])), "missing values in League Forward.", attribute))
+    LeagueShoot.data[is.na(LeagueShoot.data[, attribute]), attribute] <- 0
+  }
+}
+for(attribute in 1:ncol(TournShoot.data)){
+  if(sum(is.na(TournShoot.data[,attribute]))) {
+    print(paste(sum(is.na(TournShoot.data[,attribute])), "missing values in Tournament Forward.", attribute))
+    TournShoot.data[is.na(TournShoot.data[, attribute]), attribute] <- 0
+  }
+}
+```
+
+
+Group rows by player
+
+```{r}
+# Use the average value for each attribute
+LeagueShoot.groupByPlayer <- LeagueShoot.data %>%
+                                 group_by(Player) %>%
+                                 summarise_all(mean)
+
+TournShoot.groupByPlayer <- TournShoot.data %>%
+                                 group_by(Player) %>%
+                                 summarise_all(mean)
+```
+
+Note: All players in tournament does not occur more than twice
+
+```{r eval = F}
+for(player in unique(TournDefense.data$Player)) {
+  s <- length(which(TournDefense.data$Player == player))
+  if(s > 2) print(s)
+}
+for(player in unique(TournPass.data$Player)) {
+  s <- length(which(TournPass.data$Player == player))
+  if(s > 2) print(s)
+}
+for(player in unique(TournShoot.data$Player)) {
+  s <- length(which(TournShoot.data$Player == player))
+  if(s > 2) print(s)
+}
+```
+
+#### join tables
+```{r}
+tables.gbp <- list("ls.gbp" = LeagueShoot.groupByPlayer, "ts.gbp" = TournShoot.groupByPlayer, "ld,gbp" = LeagueDefense.groupByPlayer, "td.gbp" = TournDefense.groupByPlayer, "lp.gbp" = LeaguePass.groupByPlayer, "tp.gbp" = TournPass.groupByPlayer)
+League.tables <- list(LeagueShoot.groupByPlayer, LeaguePass.groupByPlayer, LeagueDefense.groupByPlayer)
+Tourn.tables <- list(TournShoot.groupByPlayer, TournPass.groupByPlayer, TournDefense.groupByPlayer)
+
+League.JoinedTable <- inner_join(inner_join(League.tables[[1]], League.tables[[2]], by="Player"), League.tables[[3]], by="Player")
+Tourn.JoinedTable <- inner_join(inner_join(Tourn.tables[[1]], Tourn.tables[[2]], by="Player"), Tourn.tables[[3]], by="Player")
+
+# find the average playing time
+League.JoinedTable$"90s" <- (League.JoinedTable$"90s" + League.JoinedTable$"90s.x" + League.JoinedTable$"90s.y")/3
+Tourn.JoinedTable$"90s" <- (Tourn.JoinedTable$"90s" + Tourn.JoinedTable$"90s.x" + Tourn.JoinedTable$"90s.y")/3
+League.JoinedTable <- League.JoinedTable[ , !(names(League.JoinedTable) %in% c("90s.x", "90s.y"))]
+Tourn.JoinedTable <- Tourn.JoinedTable[ , !(names(Tourn.JoinedTable) %in% c("90s.x", "90s.y"))]
+Tourn.JoinedTable.ranked <- Tourn.JoinedTable[which(!is.na(Tourn.JoinedTable$`nation rank`)),]
+nrow(League.JoinedTable)
+nrow(Tourn.JoinedTable)
+```
+
+Normalize Data
+
+```{r}
+#the normalization function is created
+norm <-function(x) { 
+  upper = quantile(x, .98)
+  lower = quantile(x, .02)
+  x_norm <- (x-lower)/(upper-lower)
+  x_norm[which(x_norm > 1)] = 1
+  x_norm[which(x_norm < 0)] = 0
+  x_norm
+}
+
+playerIndex <- which(colnames(Tourn.JoinedTable.ranked) == "Player")
+rankIndex <- which(colnames(Tourn.JoinedTable.ranked) == "nation rank")
+Tourn_norm <- as.data.frame(lapply(Tourn.JoinedTable.ranked[,-c(playerIndex,rankIndex)], norm))
+
+LeagePlayerIndex <- which(colnames(League.JoinedTable) == "Player")
+League_norm <- as.data.frame(lapply(League.JoinedTable[,-LeagePlayerIndex], norm))
+```
+
+#### Principle Component Analysis
+```{r fig.width = 10, fig.height= 4}
+# decide how many components to use
+eigenvalues <- eigen(cor(League_norm))$values
+eigenvaluesProp <- cumsum(eigenvalues)/sum(eigenvalues)
+par(mfrow = c(1,2), cex = 0.7)
+plot(eigenvalues, main = "Eigenvalues of the Correlation Matrix", sub = "Figure 2.1 Eigenvalues of the Correlation Matrix")
+plot(eigenvaluesProp, xlab = "number of components", ylab = "proportion", main = "Proportion of Variation Included", sub = "Figure 2.2 Variation explained corresponding to the number of components used in PCA")
+abline(h = 0.9, lty = 2, col = "red")
+abline(v = 21, lty = 21, col = "red")
+points(21, eigenvaluesProp[21], pch = 19, col = "red", cex = 0.95)
+text(26, 0.85, col = "red", "(21, 0.9)")
+```
+We'll choose 26 components to over 90% of the variation. 
+
+```{r}
+#check if the variance of different attributes are large
+apply(Tourn_norm, 2, var)
+plot(apply(Tourn_norm, 2, var))
+```
+
+```{r}
+# apply Principle Component Analysis
+compNum <- 22
+pca = prcomp(Tourn_norm, scale = T)
+Tourn_norm.pca <- as.matrix(Tourn_norm) %*% as.matrix(pca$rotation[,1:compNum])
+```
+
+
+```{r}
+#run knn function
+library(class)
+k <- 18
+error <- 9
+A <- c()
+B <- c()
+C <- c()
+for(i in 1:2000) {
+TournRanks <- Tourn.JoinedTable.ranked$`nation rank`
+pr <- knn.cv(Tourn_norm.pca,cl=TournRanks,k=k,use.all = TRUE)
+accuracy9 <- sum(abs(as.numeric(pr) - as.numeric(TournRanks)) <= error) / length(pr)
+accuracy0 <- sum(as.numeric(pr) == as.numeric(TournRanks)) / length(pr)
+accuracy1 <- sum(abs(as.numeric(pr) - as.numeric(TournRanks)) <= 1) / length(pr)
+A = c(A, accuracy9)
+B <- c(B, accuracy0)
+C <- c(C, accuracy1)
+}
+mean(A)
+mean(B)
+mean(C)
+```
+
+
+```{r fig.width=10, fig.height=4}
+par(mfrow = c(1,2), cex = 0.8)
+hist(A+0.001, breaks = 25, probability = T, xlab = "probability of ranked top 10", main = "Histogram of the Probability of Ranked Top 10", sub = "Figure 2.3 Histogram of the Probability of Reaching Top 10")
+hist(C, breaks = 25, probability = T, xlab = "probability of ranked top 10", main = "Histogram of the Probability of Achieving Championship", sub = "Figure 2.4 Histogram of the Probability of Achieving Championship")
+```
+```{r}
+#hist(B, breaks = 12, probability = T, xlab = "probability of ranked top 10", main = "Histogram of the Probability Reaching Top 10")
+hist(C, breaks = 25, probability = T, xlab = "probability of ranked top 10", main = "Histogram of the Probability Reaching Top 1")
+```
+
+```{r}
+mean(A) - sd(A)*1.96
+mean(A) + sd(A)*1.96
+```
+
+```{r}
+mean(C) - sd(C)*1.96
+mean(C) + sd(C)*1.96
+```
+
+```{r}
+League_norm.pca <- as.matrix(League_norm) %*% as.matrix(pca$rotation[,1:compNum])
+Target_category <- as.data.frame(Tourn.JoinedTable.ranked)[,rankIndex]
+predRank <- knn(Tourn_norm.pca,League_norm.pca,cl=Target_category,k=k)
+#League.JoinedTable$"Pred Rank" <- predRank
+table(predRank)
+```

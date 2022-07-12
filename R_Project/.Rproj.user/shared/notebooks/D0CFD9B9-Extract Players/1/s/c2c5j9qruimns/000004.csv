@@ -1,0 +1,2 @@
+"0","library(MASS)"
+"0","parcoord(playerData[,c(Gper90Index, TotalCmpIndex, TklWIndex)])"

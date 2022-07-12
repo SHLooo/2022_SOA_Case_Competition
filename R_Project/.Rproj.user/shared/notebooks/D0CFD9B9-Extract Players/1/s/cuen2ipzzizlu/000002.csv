@@ -1,0 +1,3 @@
+"0","Gper90Index <- which(colnames(League.JoinedTable.norm) == ""Gper90"")"
+"0","TotalCmpIndex <- which(colnames(League.JoinedTable.norm) == ""Total Cmp%"")"
+"0","TklWIndex <- which(colnames(League.JoinedTable.norm) == ""TklW%"")"

@@ -1,0 +1,6 @@
+"0","file_path <- ""/Users/nicoleyu/Desktop/2022-student-research-case-study-player-data.xlsx"""
+"0",""
+"0","#read in tables"
+"0","LeagueShoot <- read_excel(file_path, sheet = ""League Shooting"", skip = 11,col_names =T, na = ""N/A"")"
+"2","Error: `path` does not exist: ‘/Users/nicoleyu/Desktop/2022-student-research-case-study-player-data.xlsx’
+"

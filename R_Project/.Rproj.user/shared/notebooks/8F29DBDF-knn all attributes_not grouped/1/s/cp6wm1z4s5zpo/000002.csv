@@ -1,0 +1,4 @@
+"0","LShoot.NAattributes <- c(2, 3, 4, 6, 17, 20, 21, 22, 23, 24, 25, 26)"
+"0","TShoot.NAattributes <- c(2, 3, 5, 18)"
+"0","LeagueShoot.data <- LeagueShoot[which(LeagueShoot$Pos != ""GK""), -LShoot.NAattributes]"
+"0","TournShoot.data <- TournShoot[which(TournShoot$Pos != ""GK""), -TShoot.NAattributes]"

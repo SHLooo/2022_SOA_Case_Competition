@@ -1,0 +1,3 @@
+"0","pass.attributes <- c(""Player"",""90s"",""xA"",""A-xA"",""KP"",""Total Cmp%"")"
+"0","LeaguePass.data <- LeaguePass[which(LeaguePass$Pos != ""GK""), pass.attributes]"
+"0","TournPass.data <- TournPass[which(TournPass$Pos != ""GK""), c(pass.attributes, ""Year"")]"

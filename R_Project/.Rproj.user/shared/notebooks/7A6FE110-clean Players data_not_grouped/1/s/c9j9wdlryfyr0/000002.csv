@@ -1,0 +1,4 @@
+"0","shoot.attributes <- c(""Player"", ""90s"", ""Gper90"", ""Standard SoT%"", ""Standard G/Sh"", ""Standard SoT/90"", ""Performance%"")"
+"0","LeagueShoot.data <- LeagueShoot[which(LeagueShoot$Pos != ""GK""), shoot.attributes]"
+"0","TournShoot.data <- TournShoot[which(TournShoot$Pos != ""GK""), c(shoot.attributes, ""Year"", ""nation rank"")]"
+"0","#TournShoot.data <- TournShoot[which(TournShoot$Pos != ""GK"" & !is.na(TournShoot$`nation rank`)), c(shoot.attributes, ""nation rank"")]"

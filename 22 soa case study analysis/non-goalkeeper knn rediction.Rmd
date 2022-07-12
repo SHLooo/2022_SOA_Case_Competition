@@ -1,0 +1,50 @@
+---
+title: "non-goalkeepers knn prediction"
+author: "Shuhao Liu"
+date: "27/02/2022"
+output: html_document
+---
+
+```{r}
+path <- "/Users/liushuhao/Desktop/SOA Case Competitoin/R_Project/players_joined_subset.rda"
+load(path)
+```
+
+
+```{r}
+set.seed(123)
+#Generate a random number that is 90% of the total number of rows in dataset.
+ran <- sample(1:nrow(Tourn.JoinedTable.ranked), 0.9 * nrow(Tourn.JoinedTable.ranked))
+
+#the normalization function is created
+nor <-function(x) { (x-min(x))/(max(x)-min(x)) }
+
+playerIndex <- which(colnames(Tourn.JoinedTable.ranked) == "Player")
+rankIndex <- which(colnames(Tourn.JoinedTable.ranked) == "nation rank")
+yearIndex <- which(colnames(Tourn.JoinedTable.ranked) == "Year")
+Tourn_norm <- as.data.frame(lapply(Tourn.JoinedTable.ranked[,-c(playerIndex,rankIndex,yearIndex)], nor))
+
+Tourn_train <- Tourn_norm[ran,] 
+Tourn_test <- Tourn_norm[-ran,] 
+
+Tourn_target_category <- as.data.frame(Tourn.JoinedTable.ranked)[ran,rankIndex]
+Tourn_test_category <- as.data.frame(Tourn.JoinedTable.ranked)[-ran,rankIndex]
+
+library(class)
+#run knn function
+pr <- knn(Tourn_train,Tourn_test,cl=Tourn_target_category,k=13,use.all = TRUE)
+allowed.rank.error <- 3
+accuracy <- sum(abs(as.numeric(pr) - as.numeric(Tourn_test_category)) <= allowed.rank.error) / length(pr)
+accuracy
+```
+
+```{r}
+LeagePlayerIndex <- which(colnames(Tourn.JoinedTable.ranked) == "Player")
+League_norm <- as.data.frame(lapply(League.JoinedTable[,-LeagePlayerIndex], nor))
+Target_category <- as.data.frame(Tourn.JoinedTable.ranked)[,rankIndex]
+pred <- knn(Tourn_norm,League_norm,cl=Target_category,k=1)
+League.JoinedTable$rank.pred <- pred
+table(League.JoinedTable$rank.pred)
+```
+
+

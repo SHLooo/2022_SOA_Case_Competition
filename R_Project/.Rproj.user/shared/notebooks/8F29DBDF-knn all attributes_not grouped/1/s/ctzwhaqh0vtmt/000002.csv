@@ -1,0 +1,4 @@
+"0","LPass.NAattributes <- c(2, 3, 4, 6, 30, 31)"
+"0","TPass.NAattributes <- c(2, 3, 5, 29)"
+"0","LeaguePass.data <- LeaguePass[which(LeaguePass$Pos != ""GK""), -LPass.NAattributes]"
+"0","TournPass.data <- TournPass[which(TournPass$Pos != ""GK""), -TPass.NAattributes]"

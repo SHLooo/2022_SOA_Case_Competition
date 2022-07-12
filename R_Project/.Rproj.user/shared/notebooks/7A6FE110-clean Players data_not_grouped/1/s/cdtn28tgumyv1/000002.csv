@@ -1,0 +1,3 @@
+"0","defense.attributes <- c(""Player"", ""90s"", ""Tackles Tkl/min"", ""TklW%"", ""Vs Dribbles Past/min"", ""Pressures Succ %"", ""Pressures %"", ""Blocks Blocks/min"", ""Int/min"", ""Clr/min"", ""Err/min"")"
+"0","LeagueDefense.data <- LeagueDefense[which(LeagueDefense$Pos != ""GK""),defense.attributes]"
+"0","TournDefense.data <- TournDefense[which(TournDefense$Pos != ""GK""),c(defense.attributes, ""Year"")]"
